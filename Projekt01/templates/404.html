@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="text-center py-5 mt-5">
+    <h1 class="display-1 fw-bold text-secondary">Error 404</h1>
+    <h2>Page Not Found</h2>
+    <p class="lead text-muted">Oops! The word or page you are looking for doesn't exist in our dictionary.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Return Home</a>
+</div>
+{% endblock %}

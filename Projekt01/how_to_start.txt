@@ -1,0 +1,13 @@
+Instructions on how to start the app right after cloning from GitHub.
+
+In the console:
+cd django_proj
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_categories
+python manage.py createsuperuser
+python manage.py runserver
+
+You can also set DEBUG=False in settings.py for 404 and 500 Error templates to be usable.

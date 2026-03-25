@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm text-center">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Welcome to DictioCollab</h1>
+        <p class="col-md-8 mx-auto fs-4">A collaborative English dictionary built by the community.</p>
+        <a href="{% url 'word_list' %}" class="btn btn-primary btn-lg">Browse Words</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'add_word' %}" class="btn btn-outline-primary btn-lg ms-2">Add a Word</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

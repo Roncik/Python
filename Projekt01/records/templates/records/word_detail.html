@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+{% block content %}
+<a href="{% url 'word_list' %}" class="btn btn-outline-secondary btn-sm mb-3">&larr; Back to Dictionary</a>
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h1 class="card-title display-4">{{ word.term }}</h1>
+        <div class="mb-3">
+            {% for cat in word.categories.all %}
+                <span class="badge bg-secondary">{{ cat.name }}</span>
+            {% endfor %}
+        </div>
+        {% if user.is_authenticated %}
+            <a href="{% url 'edit_word' word.pk %}" class="btn btn-sm btn-outline-primary">Edit Word</a>
+            <a href="{% url 'delete_word' word.pk %}" class="btn btn-sm btn-outline-danger">Delete Word</a>
+        {% endif %}
+    </div>
+</div>
+
+<h3>Definitions</h3>
+{% for definition in word.definitions.all %}
+    <div class="card mb-2">
+        <div class="card-body d-flex">
+            
+            <div class="d-flex flex-column align-items-center me-3">
+                <form method="POST" action="{% url 'vote_definition' definition.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="up" class="btn btn-sm text-success border-0 bg-transparent fs-5 py-0" {% if not user.is_authenticated %}disabled{% endif %}>&#9650;</button>
+                </form>
+                
+                <span class="fw-bold my-1">{{ definition.score }}</span>
+                
+                <form method="POST" action="{% url 'vote_definition' definition.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="down" class="btn btn-sm text-danger border-0 bg-transparent fs-5 py-0" {% if not user.is_authenticated %}disabled{% endif %}>&#9660;</button>
+                </form>
+            </div>
+
+            <div>
+                <p class="fs-5 mb-1">{{ definition.text }}</p>
+                <small class="text-muted">Submitted by {{ definition.author.username }}</small>
+            </div>
+            
+        </div>
+    </div>
+{% empty %}
+    <p>No definitions yet.</p>
+{% endfor %}
+    <hr class="my-5">
+
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Discussion</h3>
+            
+            {% if user.is_authenticated %}
+                <form method="POST" class="mb-4">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+                </form>
+            {% else %}
+                <div class="alert alert-info py-2">
+                    <a href="{% url 'login' %}">Log in</a> to join the discussion.
+                </div>
+            {% endif %}
+
+            <div class="mt-4">
+                {% for comment in comments %}
+                    <div class="card mb-2 bg-light border-0">
+                        <div class="card-body py-2">
+                            <p class="mb-1">{{ comment.body }}</p>
+                            <small class="text-muted">
+                                <strong>{{ comment.author.username }}</strong> • {{ comment.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No comments yet. Start the conversation!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

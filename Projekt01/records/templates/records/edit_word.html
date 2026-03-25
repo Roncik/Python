@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h2 class="mb-0">Edit: {{ word.term }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <h4 class="mt-2">Categories</h4>
+                    {{ word_form.as_p }}
+                    
+                    <hr class="my-4">
+                    
+                    <h4>Definition</h4>
+                    {{ def_form.as_p }}
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                        <a href="{% url 'word_detail' word.pk %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
