@@ -7,6 +7,8 @@
         <a href="{% url 'word_list' %}" class="btn btn-primary btn-lg">Browse Words</a>
         {% if user.is_authenticated %}
             <a href="{% url 'add_word' %}" class="btn btn-outline-primary btn-lg ms-2">Add a Word</a>
+            <a href="{% url 'words_by_me' %}" class="btn btn-outline-primary btn-lg ms-2">My words</a>
+            <a href="{% url 'my_comments' %}" class="btn btn-outline-primary btn-lg ms-2">My comments</a>
         {% endif %}
     </div>
 </div>

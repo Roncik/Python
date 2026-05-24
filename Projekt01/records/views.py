@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Word, Definition, Vote
+from .models import Word, Definition, Vote, Comment
 from .forms import WordForm, DefinitionForm, CommentForm, WordEditForm
 
 def home(request):
@@ -121,3 +121,13 @@ def vote_definition(request, pk):
                 Vote.objects.create(definition=definition, user=request.user, is_upvote=is_upvote)
                         
         return redirect('word_detail', pk=definition.word.pk)
+    
+@login_required
+def words_by_me(request):
+    words = Word.objects.filter(definitions__author=request.user).distinct().order_by('-created_at')
+    return render(request, 'records/my_word_list.html', {'words': words})
+
+@login_required
+def my_comments(request):
+    comments = Comment.objects.filter(author=request.user).order_by('-created_at')
+    return render(request, 'records/my_comment_list.html', {'comments': comments})

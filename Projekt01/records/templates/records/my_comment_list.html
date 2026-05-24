@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>My Comments</h2>
+</div>
+<div class="list-group shadow-sm">
+    {% for comment in comments %}
+        <a href="{% url 'word_detail' comment.word.pk %}" class="list-group-item list-group-item-action">
+            <h5 class="mb-1">{{ comment.word.term }} - {{ comment.body }}</h5>
+            <small class="text-muted">Added: {{ comment.created_at|date:"F d, Y" }}</small>
+        </a>
+    {% empty %}
+        <p>You haven't added any comments yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
