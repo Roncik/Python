@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <h2 class="text-center mb-3">My Posts</h2>
+        <form method="GET" action="{{ url_for('posts.myposts') }}" class="d-flex">
+            <input class="form-control me-2" type="search" name="search" placeholder="Filter by Title or Location..." aria-label="Search" value="{{ search_query or '' }}">
+            <button class="btn btn-outline-primary" type="submit">Filter</button>
+            {% if search_query %}
+            <a href="{{ url_for('posts.myposts') }}" class="btn btn-outline-secondary ms-2">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for post in posts %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{{ url_for('posts.post', post_id=post.id) }}" class="text-decoration-none">{{ post.title }}</a></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ post.location }} | {{ post.event_time }}</h6>
+                    <p class="card-text">{{ post.description[:100] }}...</p>
+                </div>
+                <div class="card-footer text-muted bg-white border-top-0">
+                    <small>Organizer: {{ post.organizer }} | Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center">
+            <h3>No posts found.</h3>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}

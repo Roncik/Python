@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <h2 class="text-center mb-3">My Comments</h2>
+    </div>
+</div>
+
+<div class="row">
+    {% for comment in comments %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <p class="card-text">{{ comment.content }}</p>
+                </div>
+                <div class="card-footer text-muted bg-white border-top-0">
+                    <small>Commented on <a href="{{ url_for('posts.post', post_id=comment.post_id) }}" class="text-decoration-none">{{ comment.post.title }}</a> | Posted on {{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center">
+            <h3>No comments found.</h3>
+        </div>
+    {% endfor %}
+</div>
+{% endblock content %}
