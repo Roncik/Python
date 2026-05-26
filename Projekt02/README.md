@@ -7,6 +7,10 @@ postów informujących o nadchodzących wydarzeniach. Posty zawierają: tytuł, 
 
  - Dodatkowo zaimplementowałem testy jednostkowe(tests.py).
 
+# Uruchamianie
+
+- pip install -r requirements.txt
+- python run.py
 
 # Zakres korzystania z pomocy samouczków i AI:
 - samouczek: zbudowanie prototypu projektu i zaprojektowanie struktury
