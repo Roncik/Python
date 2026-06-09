@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
@@ -11,11 +12,13 @@ def home(request):
     search_query = request.GET.get('search', '')
     if search_query:
         posts = Post.objects.filter(
-            Q(title__icontains=search_query) | Q(location__icontains=search_query) |  Q(description__icontains=search_query)
+            Q(title__icontains=search_query) | 
+            Q(location__icontains=search_query) |
+            Q(tags__icontains=search_query) | 
+            Q(description__icontains=search_query)
         ).order_by('-date_posted')
     else:
         posts = Post.objects.all().order_by('-date_posted')
-    
     return render(request, 'eboard/index.html', {'posts': posts, 'search_query': search_query})
 
 def register(request):
@@ -33,6 +36,29 @@ def register(request):
         form = RegistrationForm()
     return render(request, 'eboard/register.html', {'form': form, 'title': 'Register'})
 
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            user_obj = User.objects.get(email=email)
+            user = authenticate(username=user_obj.username, password=password)
+            if user is not None:
+                django_login(request, user)
+                next_page = request.GET.get('next')
+                return redirect(next_page) if next_page else redirect('home')
+            else:
+                messages.error(request, 'Login Unsuccessful. Please check email and password')
+        except User.DoesNotExist:
+            messages.error(request, 'Login Unsuccessful. Please check email and password')
+    return render(request, 'eboard/login.html', {'title': 'Login'})
+
+def logout_view(request):
+    django_logout(request)
+    return redirect('home')
+
 @login_required
 def new_post(request):
     if request.method == 'POST':
@@ -49,7 +75,6 @@ def new_post(request):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
-    form = CommentForm()
     if request.method == 'POST':
         if not request.user.is_authenticated:
             messages.error(request, 'You need to login to comment.')
@@ -62,6 +87,8 @@ def post_detail(request, post_id):
             comment.save()
             messages.success(request, 'Comment added!')
             return redirect('post-detail', post_id=post.id)
+    else:
+        form = CommentForm()
     return render(request, 'eboard/post.html', {'title': post.title, 'post': post, 'form': form})
 
 @login_required
@@ -94,10 +121,11 @@ def delete_post(request, post_id):
 def myposts(request):
     search_query = request.GET.get('search', '')
     if search_query:
-        posts = Post.objects.filter(
-            author=request.user
-        ).filter(
-            Q(title__icontains=search_query) | Q(location__icontains=search_query) |  Q(description__icontains=search_query)
+        posts = Post.objects.filter(author=request.user).filter(
+            Q(title__icontains=search_query) | 
+            Q(location__icontains=search_query) |
+            Q(tags__icontains=search_query) |
+            Q(description__icontains=search_query)
         ).order_by('-date_posted')
     else:
         posts = Post.objects.filter(author=request.user).order_by('-date_posted')
@@ -107,10 +135,3 @@ def myposts(request):
 def mycomments(request):
     comments = Comment.objects.filter(author=request.user).order_by('-date_posted')
     return render(request, 'eboard/my_comments.html', {'comments': comments})
-
-# Obsługa błędów w widokach (wymaga DEBUG=False)
-def handler404(request, exception):
-    return render(request, 'eboard/404.html', status=404)
-
-def handler500(request):
-    return render(request, 'eboard/500.html', status=500)

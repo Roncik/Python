@@ -14,6 +14,12 @@ class RegistrationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
         }
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("That username is taken. Please choose a different one.")
+        return username
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
@@ -31,13 +37,13 @@ class RegistrationForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'location', 'event_time', 'organizer', 'description']
-        labels = {'event_time': 'Time (e.g., 18:00)'}
+        fields = ['title', 'location', 'event_time', 'organizer', 'tags', 'description']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control'}),
             'event_time': forms.TextInput(attrs={'class': 'form-control'}),
             'organizer': forms.TextInput(attrs={'class': 'form-control'}),
+            'tags': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'np. praca, rozrywka, pilne'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
         }
 
